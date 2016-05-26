@@ -6,9 +6,228 @@
 </description>
     <link>http://www.frolovs.me/</link>
     <atom:link href="http://www.frolovs.me/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 20 May 2016 15:06:57 +0100</pubDate>
-    <lastBuildDate>Fri, 20 May 2016 15:06:57 +0100</lastBuildDate>
+    <pubDate>Thu, 26 May 2016 16:06:18 +0100</pubDate>
+    <lastBuildDate>Thu, 26 May 2016 16:06:18 +0100</lastBuildDate>
     <generator>Jekyll v3.1.5</generator>
+    
+      <item>
+        <title>Binomial Pricing Trees in R</title>
+        <description>&lt;p&gt;This is &lt;strong&gt;not&lt;/strong&gt; yet another tutorial on binomial trees. I expect my reader to be familiar with them already. If not, an &lt;a href=&quot;http://www.goddardconsulting.ca/option-pricing-binomial-index.html&quot;&gt;article by Goddard Consulting&lt;/a&gt; is rather readable. Here I would like to show how to program the binomial trees in R and how to generate the graph description which an external program like &lt;a href=&quot;http://www.graphviz.org/&quot;&gt;graphviz&lt;/a&gt; can turn into a pretty picture.&lt;/p&gt;
+
+&lt;h1 id=&quot;why-keep-the-tree&quot;&gt;Why keep the tree?&lt;/h1&gt;
+
+&lt;p&gt;It is true that in many cases it is not necessary to store the whole tree just to get the final value of the option. I do, however, find it useful to see how the option value changes with the asset price and time. It is also useful if one wishes to calculate greeks, for example.&lt;/p&gt;
+
+&lt;h1 id=&quot;some-examples&quot;&gt;Some examples&lt;/h1&gt;
+
+&lt;p&gt;The following example was produced by the programs discussed later in this post. The parameters (and, thankfully, results) match those of the Example 11.11 in Hull.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The index level is 810, strike price is 800, risk-free rate is 5%, volatility is 20%, and dividend yield is 2%. We are pricing a 6-month European call option.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/binomial-tree-european-call-1.png&quot; alt=&quot;A Binomial Tree Example 1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;For a more involved example, here is a valuation of an American put with more steps. The circumscribed noded at the bottom right are the nodes where an early exercise is preferred.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/binomial-tree-american-put-1.png&quot; alt=&quot;A Binomial Tree Example 2&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;By comparing with the following screenshot from DerivaGem one can see that the values make sense, indeed.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/derivagem-1.png&quot; alt=&quot;A DerivaGem screenshot&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;That’s the desired outcome, let’s get it done.&lt;/p&gt;
+
+&lt;h1 id=&quot;previously-in-2012&quot;&gt;Previously… in 2012&lt;/h1&gt;
+
+&lt;p&gt;The &lt;a href=&quot;http://www.theresearchkitchen.com/archives/738&quot;&gt;two functions written by Rory Winston&lt;/a&gt; will provide scaffolding for achieving the aims of this post.&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;genlattice&lt;/em&gt; function generates the &lt;em&gt;recombining binomial tree&lt;/em&gt;, or &lt;em&gt;binary lattice&lt;/em&gt; for the asset price only.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/1246bdc97e26e9b4ac0712f53fa1eaa9.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;The &lt;em&gt;dotlattice&lt;/em&gt; function takes this lattice and generates the graph specification in &lt;a href=&quot;http://www.graphviz.org/&quot;&gt;graphviz&lt;/a&gt; format from it.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/0818526077ab518317cdaac7d7f148ab.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;These two functions are our starting point.&lt;/p&gt;
+
+&lt;h1 id=&quot;fast-forward-to-2016&quot;&gt;Fast forward to 2016&lt;/h1&gt;
+
+&lt;p&gt;Rory’s post was written in 2012, and I had to make some trivial changes to make it work with my version of &lt;a href=&quot;http://www.graphviz.org/&quot;&gt;graphviz&lt;/a&gt;. Specifically, I had to remove references to &lt;em&gt;samehead&lt;/em&gt; and &lt;em&gt;sametail&lt;/em&gt; in node specification.&lt;/p&gt;
+
+&lt;p&gt;I changed the line&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;node[shape=&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;, samehead, sametail];&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;\n&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;to&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;node[shape=&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;];&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;\n&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;and this was enough to be able to produce the image using R&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;capture.output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dotlattice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;genlattice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TRUE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;lattice.dot&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;and the terminal&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;dot -Tpng -o lattice-1.png lattice.dot&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/lattice-1.png&quot; alt=&quot;A Binomial Tree generated with genlattice and dotlattice. &quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;These functions are a good starting point but we need more. The &lt;em&gt;genlattice&lt;/em&gt; function must value the option and store the option price, as well as the asset price. It must accept the parameters which describe the option valuation scenarios, such as volatility, interest rates, payoff function and so on. The &lt;em&gt;dotlattice&lt;/em&gt; function needs to render both asset and option prices to a desired level of precision. It must work with both European and American trees (the latter is different from the former by having an early exercise flag for each node).&lt;/p&gt;
+
+&lt;h1 id=&quot;the-vanilla-payoff-functions&quot;&gt;The Vanilla Payoff Functions&lt;/h1&gt;
+
+&lt;p&gt;We must have the payoff functions in hand before we proceed. These provide the boundary conditions for the equations and they will be useful for pricing both European and American options. Note, that these are &lt;em&gt;vanilla&lt;/em&gt; options only for now.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/44f66fde5719348946b121f91204caef.js&quot;&gt; &lt;/script&gt;
+
+&lt;h1 id=&quot;european-option-valuation&quot;&gt;European Option Valuation&lt;/h1&gt;
+
+&lt;p&gt;I make a number of significant changes to &lt;em&gt;genlattice&lt;/em&gt; function. Previously, we’ve been storing the asset value only at each node using a vector named &lt;em&gt;X&lt;/em&gt;. Now we are going to store &lt;em&gt;two&lt;/em&gt; values per node – the asset price and the option price. This can be achieved by using a data frame. To create a data frame, we first compute the number of nodes in the tree and pre-populate the frame with NA values. This is to make sure that our pricing algorithm does not leave any nodes untouched. This provides an invariant – after the valuation has finished, there should be no NA values in the frame.&lt;/p&gt;
+
+&lt;p&gt;We also need to match the up and down movement parameters with volatility since the latter is the thing we can at least hope to know. For this, the oldest and simplest Cox-Ross-Rubinstein method is used (CRR, 1979), where the &lt;script type=&quot;math/tex&quot;&gt;\sigma&lt;/script&gt; is volatility and &lt;script type=&quot;math/tex&quot;&gt;\delta t&lt;/script&gt; is a time step.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+  u&amp; =e^{\sigma \sqrt{\delta t}}\\
+  d&amp; =e^{-\sigma \sqrt{\delta t}} = \frac{1}{u}\\
+  p&amp; =\frac{a - d}{u - d}\\
+  a&amp; = e^{-r \delta t}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Where &lt;script type=&quot;math/tex&quot;&gt;p&lt;/script&gt; is the synthetic probability (or Q-measure).&lt;/p&gt;
+
+&lt;p&gt;Aplying the discussed changes results in the following function.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/177e8b41c5829cce4a4b0d4d219bf99d.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;For convenience, I also define two functions which will serve as the interface to it.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/80dd9ef9a39a83719550cd7750733dc5.js&quot;&gt; &lt;/script&gt;
+
+&lt;h1 id=&quot;american-option-valuation&quot;&gt;American Option Valuation&lt;/h1&gt;
+
+&lt;p&gt;For the American option, the early exercise flag must to be stored at every node as well. While it’s possible to have a unified implementation which values both European and American options, the amount of branching resulting in the code is not worth it, in my experience. The extra flags and branching sabotage clarity and ease of making changes. I take the view that any computer program that handles money must be as straightforward in its implementation as possible. So, without further ado, I present my American vanilla option valuator.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/72779161c6bced858b73867074de27b1.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;And just like before, there are two functions which will serve as the interface to it.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/29f873631bd014af2d2d9262a4a79080.js&quot;&gt; &lt;/script&gt;
+
+&lt;h1 id=&quot;plotting-the-tree&quot;&gt;Plotting the tree&lt;/h1&gt;
+
+&lt;p&gt;Thankfully, as far as plotting is concerned, the differences between a European and American trees are negligible – the latter needs some way of highlighting the nodes where early exercise happens. So I chose to keep a single &lt;em&gt;dotlattice&lt;/em&gt; implementation which checks which type of tree it is dealing with. The facility to round the prices to a given number of digits after a decimal point has been introduced. I have also removed some unnecessary functionality such as printing the points instead of full nodes.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/0338553b084a447142717bee62f0324a.js&quot;&gt; &lt;/script&gt;
+
+&lt;h1 id=&quot;the-results&quot;&gt;The results&lt;/h1&gt;
+
+&lt;p&gt;Now the time has come to try some examples. Here is the &lt;a href=&quot;https://github.com/olliefr/binomial-trees/blob/master/binomial-pricing-trees.R&quot;&gt;complete, up-to-date code in a single file&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The first example is the European Call that we have seen in the introduction albeit with an increased number of steps.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;genlattice.vanilla.european.call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Asset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;810&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Volatility&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IntRate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.05&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DividendRate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.02&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Strike&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;800&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expiry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NoSteps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;capture.output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dotlattice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;digits&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;lattice.dot&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And through the &lt;a href=&quot;http://www.graphviz.org/&quot;&gt;graphviz&lt;/a&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;dot -Tpng -o binomial-tree-european-call-2.png lattice.dot&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The output is&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/binomial-tree-european-call-2.png&quot; alt=&quot;A Binomial Tree Example 3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Another example is for a foreign currency, which can be thought of as an asset providing a yield at the foreign risk-free rate of interest.&lt;/p&gt;
+
+&lt;p&gt;The following Example 11.2 is from Hull 7th ed., p. 254&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The Australian dollar is currently worth 0.6100 U.S. dollards and this exchange rate has a volatility of 12%. The Australian risk-free rate is 7% and the U.S. risk-free rate is 5%. […] 3-month American call option with a strike price of 0.6000 using a three-step tree.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We can value this using our framework&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;genlattice.vanilla.american.call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Asset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.6100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Volatility&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IntRate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.05&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DividendRate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.07&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Strike&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expiry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NoSteps&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;capture.output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dotlattice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;digits&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;lattice.dot&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And through the &lt;a href=&quot;http://www.graphviz.org/&quot;&gt;graphviz&lt;/a&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;dot -Tpng -o binomial-tree-american-call-1.png lattice.dot&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;We get&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/binomial-tree-american-call-1.png&quot; alt=&quot;A Binomial Tree Example 4&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This matches the Figure 11.12 in Hull. What a relief!&lt;/p&gt;
+
+&lt;h1 id=&quot;what-now&quot;&gt;What now?&lt;/h1&gt;
+
+&lt;p&gt;The code that we now have opens up a number of interesting directions. The other related things which I would like to try:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Computing the Greeks in binomial tree&lt;/li&gt;
+  &lt;li&gt;Binomial trees with skewness and curtosis&lt;/li&gt;
+  &lt;li&gt;Matching volatility with methods other than Cox-Ross-Rubinstein&lt;/li&gt;
+  &lt;li&gt;Trinomial trees&lt;/li&gt;
+  &lt;li&gt;Non-recombining trees, path-dependent options&lt;/li&gt;
+  &lt;li&gt;Power, cap options&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I’ll post a write-up if I ever have the chance to look into them.&lt;/p&gt;
+
+&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+
+&lt;p&gt;The books listed below all discuss binomial trees to some depth and have pictures like the ones I have created for this post.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Haug, E.G. (2007) &lt;em&gt;The Complete Guide to Option Pricing Formulas&lt;/em&gt;. 2nd ed. Mc-Graw Hill&lt;/li&gt;
+  &lt;li&gt;Hull, J.C. (2007) &lt;em&gt;Options, Futures, and Other Derivatives&lt;/em&gt;. 7th ed. Pearson Education&lt;/li&gt;
+  &lt;li&gt;Neftci, S.N. and Hirsa A. (2014) &lt;em&gt;An Introduction to the Mathematics of Financial Derivatives&lt;/em&gt;. 3rd ed. Elsevier&lt;/li&gt;
+  &lt;li&gt;Wilmott, P. (2006) &lt;em&gt;Paul Wilmott on Quantitative Finance: Volume 1&lt;/em&gt;. 2nd ed. Wiley&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Tue, 24 May 2016 09:00:00 +0100</pubDate>
+        <link>http://www.frolovs.me/quant/finance/binomial/american/european/r/graphviz/2016/05/24/binomial-pricing-trees-in-R.html</link>
+        <guid isPermaLink="true">http://www.frolovs.me/quant/finance/binomial/american/european/r/graphviz/2016/05/24/binomial-pricing-trees-in-R.html</guid>
+        
+        
+        <category>quant</category>
+        
+        <category>finance</category>
+        
+        <category>binomial</category>
+        
+        <category>american</category>
+        
+        <category>european</category>
+        
+        <category>R</category>
+        
+        <category>graphviz</category>
+        
+      </item>
     
       <item>
         <title>Brainteasing Our Way to the Central Limit Theorem</title>
