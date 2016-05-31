@@ -6,9 +6,181 @@
 </description>
     <link>http://www.frolovs.me/</link>
     <atom:link href="http://www.frolovs.me/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 26 May 2016 16:10:24 +0100</pubDate>
-    <lastBuildDate>Thu, 26 May 2016 16:10:24 +0100</lastBuildDate>
+    <pubDate>Tue, 31 May 2016 14:47:28 +0100</pubDate>
+    <lastBuildDate>Tue, 31 May 2016 14:47:28 +0100</lastBuildDate>
     <generator>Jekyll v3.1.5</generator>
+    
+      <item>
+        <title>A bad strategy for rolling a die.</title>
+        <description>&lt;p&gt;When I was learning to program, this is what a lot of books would offer as a model of a die roll&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;die&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;with &lt;code&gt;rand()&lt;/code&gt; returning a uniformly distributed random integer from a closed interval &lt;code&gt;[0,RAND_MAX]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;I was slightly surprised when revising C++ some years later I came across &lt;a href=&quot;https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1136/materials/CS106BX-Reader.pdf&quot;&gt;Stanford CS106B Course Reader&lt;/a&gt; which explained that&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;code&gt;rand()&lt;/code&gt; guarantees only that the value it produces in uniformly distributed over the range from 0 to RAND_MAX. There is, however, no guarantee that the reminders on division by six will be at all random.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;My mathematical maturity at the time was not good enough to figure out why this is the case, so I just kept this nugget of wisdom in my head until yesterday I found my old notes in the box and with some experimentation was able to understand why this must be the case.&lt;/p&gt;
+
+&lt;h1 id=&quot;a-thought-experiment&quot;&gt;A thought experiment&lt;/h1&gt;
+
+&lt;p&gt;Omitting the &lt;code&gt;+1&lt;/code&gt; part of the formula (without any loss of generality), suppose that we still would like to model rolling a six-sided die where the die sides are numbered 0 to 5.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;die&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;However, now we know that &lt;code&gt;RAND_MAX&lt;/code&gt; is 5. Then, the sample space &lt;code&gt;rand()&lt;/code&gt; draws from is&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;We can take each value in this sample space and find its value modulo 6. The result is the same since, for example, &lt;code&gt;5 mod 6 = 5&lt;/code&gt;&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Therefore, every number from 0 to 5 has a uniform probability of being returned by &lt;code&gt;rand()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The next step is to increase the size of the sample space so that the last element is now 11. The sample space becomes&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;6&lt;/td&gt;
+    &lt;td&gt;7&lt;/td&gt;
+    &lt;td&gt;8&lt;/td&gt;
+    &lt;td&gt;9&lt;/td&gt;
+    &lt;td&gt;10&lt;/td&gt;
+    &lt;td&gt;11&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;And, just as before, we take each value modulo 6 and we get&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Although the sample space has increased, the probability &lt;code&gt;rand() % 6&lt;/code&gt; has not changed – there is exactly two instances of each value from 0 to 5, so the distribution is still uniform.&lt;/p&gt;
+
+&lt;p&gt;You might have already guessed where it leads. Consider setting &lt;code&gt;RAND_MAX&lt;/code&gt; to 32,767 which is the minimal value it can be set to by the standard-compliant C compiler implementation. The sample space becomes&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;6&lt;/td&gt;
+    &lt;td&gt;7&lt;/td&gt;
+    &lt;td&gt;8&lt;/td&gt;
+    &lt;td&gt;9&lt;/td&gt;
+    &lt;td&gt;10&lt;/td&gt;
+    &lt;td&gt;11&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan=&quot;6&quot; class=&quot;colspan&quot;&gt;... many happily skipped rows ...&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;32,766&lt;/td&gt;
+    &lt;td&gt;32,767&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;When this sample space is transformed modulo 6 we get&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt;
+    &lt;td&gt;4&lt;/td&gt;
+    &lt;td&gt;5&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan=&quot;6&quot; class=&quot;colspan&quot;&gt;... many happily skipped rows ...&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;0&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;empty&quot;&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;In this table, 0s and 1s outnumber other values by 1 each. If a random number is drawn from this table, 0s and 1s have a slightly higher chance of being picked. The “modulo 6” distribution is not uniform! And any other “modulo n” distribution won’t be, unless the table must be “rectangular” with no cells “hanging” on its bottom row, that is unless n happens to satisfy the condition&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;RAND_MAX mod n = n-1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, we do not know what &lt;code&gt;RAND_MAX&lt;/code&gt; is set to unless we care to look at a particular compiler implementation, but the lesson is clear – the primitive rand() function may not be good enough to build a model which requires uniform random integers. The &lt;a href=&quot;https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1136/materials/CS106BX-Reader.pdf&quot;&gt;CS106 Course Reader&lt;/a&gt; mentioned before explains how to augment rand() to produce uniformly distributed random integers from a closed interval &lt;code&gt;[a,b]&lt;/code&gt; in four easy steps – Normalisation, Scaling, Translation and Conversion. It is not difficult, but the opportunities for making mistakes are very real. So it must be noted, that C++11 standard provides a much more satisfying choice of random number generators which may be a reason good enough for those interesting in mathematical modelling to prefer C++ to C.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 31 May 2016 00:00:00 +0100</pubDate>
+        <link>http://www.frolovs.me/2016/05/31/a-bad-strategy-for-rolling-a-die.html</link>
+        <guid isPermaLink="true">http://www.frolovs.me/2016/05/31/a-bad-strategy-for-rolling-a-die.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Binomial Pricing Trees in R</title>
@@ -208,9 +380,9 @@
 &lt;/ul&gt;
 
 </description>
-        <pubDate>Tue, 24 May 2016 09:00:00 +0100</pubDate>
-        <link>http://www.frolovs.me/2016/05/24/binomial-pricing-trees-in-R.html</link>
-        <guid isPermaLink="true">http://www.frolovs.me/2016/05/24/binomial-pricing-trees-in-R.html</guid>
+        <pubDate>Thu, 26 May 2016 00:00:00 +0100</pubDate>
+        <link>http://www.frolovs.me/2016/05/26/binomial-pricing-trees-in-R.html</link>
+        <guid isPermaLink="true">http://www.frolovs.me/2016/05/26/binomial-pricing-trees-in-R.html</guid>
         
         
       </item>
@@ -234,13 +406,13 @@
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;p_{x}(k) = \binom{n}{k} p^k \left(1-p\right)^{n-k}&lt;/script&gt;
 
-&lt;p&gt;This means, for example, that the probability of scoring &lt;em&gt;exactly&lt;/em&gt; 220 heads is &lt;/p&gt;
+&lt;p&gt;This means, for example, that the probability of scoring &lt;em&gt;exactly&lt;/em&gt; 220 heads is&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;p_{x}(220) = \binom{400}{220} \left(\frac{1}{2}\right)^{220} \left(1-\frac{1}{2}\right)^{400-220} = \frac{\binom{400}{220}}{2^{400}}&lt;/script&gt;
 
 &lt;p&gt;The final form of this expression can be interpreted as a number of ways to choose 220 heads from 400 tosses in the numerator over the total number of possible configurations in the denominator.&lt;/p&gt;
 
-&lt;p&gt;Herein comes the trouble. We would like to know the probability of the number of heads being &lt;script type=&quot;math/tex&quot;&gt;\ge 220&lt;/script&gt;, not just &lt;em&gt;exactly&lt;/em&gt; 220. In other words, we seek to compute the sum &lt;/p&gt;
+&lt;p&gt;Herein comes the trouble. We would like to know the probability of the number of heads being &lt;script type=&quot;math/tex&quot;&gt;\ge 220&lt;/script&gt;, not just &lt;em&gt;exactly&lt;/em&gt; 220. In other words, we seek to compute the sum&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;p_x(k \ge 220) = \sum^{400}_{k=220} p_x(k) = p_x(220) + p_x(221) + p_x(222) + \dots + p_x(400)&lt;/script&gt;
 
@@ -280,11 +452,11 @@
 
 &lt;h1 id=&quot;option-2-sum-by-iteration&quot;&gt;Option 2: Sum by Iteration&lt;/h1&gt;
 
-&lt;p&gt;For a more formal approach, consider the sum &lt;/p&gt;
+&lt;p&gt;For a more formal approach, consider the sum&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;p_x(k \ge 220) = p_x(220) + p_x(221) + p_x(222) + \dots + p_x(400)&lt;/script&gt;
 
-&lt;p&gt;Since the Bernoulli probability for each toss &lt;script type=&quot;math/tex&quot;&gt;p=0.5&lt;/script&gt; is fixed, the sum of probabilities can be reduced to the sum of binomial coefficients &lt;/p&gt;
+&lt;p&gt;Since the Bernoulli probability for each toss &lt;script type=&quot;math/tex&quot;&gt;p=0.5&lt;/script&gt; is fixed, the sum of probabilities can be reduced to the sum of binomial coefficients&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;p_x(k \ge 220) = 2^{-n} \sum_{k=220}^{400} \binom{n}{k}&lt;/script&gt;
 
@@ -296,11 +468,11 @@
 
 &lt;p&gt;This code returns the value of &lt;script type=&quot;math/tex&quot;&gt;0.03&lt;/script&gt;, or &lt;script type=&quot;math/tex&quot;&gt;3\%&lt;/script&gt;. This result was computed much, much faster than using simulation, but the important thing here is that it’s the &lt;em&gt;same answer&lt;/em&gt; obtained using &lt;em&gt;different methods&lt;/em&gt;.&lt;/p&gt;
 
-&lt;p&gt;The C++ implementation would have to include a way to compute &lt;script type=&quot;math/tex&quot;&gt;\binom{n}{k}&lt;/script&gt; since the standard library does not provide for it. Implementing it is a good exercise, since one cannot rely on the mathematical definition involving factorials – the result would overflow even for rather small values of &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;. (Knuth, 2011) has a lot more to say on this. &lt;/p&gt;
+&lt;p&gt;The C++ implementation would have to include a way to compute &lt;script type=&quot;math/tex&quot;&gt;\binom{n}{k}&lt;/script&gt; since the standard library does not provide for it. Implementing it is a good exercise, since one cannot rely on the mathematical definition involving factorials – the result would overflow even for rather small values of &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;. (Knuth, 2011) has a lot more to say on this.&lt;/p&gt;
 
 &lt;h1 id=&quot;option-3-normal-approximation-based-on-the-central-limit-theorem&quot;&gt;Option 3: Normal Approximation Based on the Central Limit Theorem&lt;/h1&gt;
 
-&lt;p&gt;Since each coin toss &lt;script type=&quot;math/tex&quot;&gt;X_i&lt;/script&gt; is an independent Bernoulli rendom variable and all tosses in a trial are identically distributed with mean &lt;script type=&quot;math/tex&quot;&gt;\mu = \frac{1}{2}&lt;/script&gt; and variance &lt;script type=&quot;math/tex&quot;&gt;\sigma^2 = \frac{1}{4}&lt;/script&gt;, we can try to pretend that the sum &lt;script type=&quot;math/tex&quot;&gt;S_n = \sum^{400}_{i=1} X_i &lt;/script&gt; of such variables is normally distributed. &lt;/p&gt;
+&lt;p&gt;Since each coin toss &lt;script type=&quot;math/tex&quot;&gt;X_i&lt;/script&gt; is an independent Bernoulli rendom variable and all tosses in a trial are identically distributed with mean &lt;script type=&quot;math/tex&quot;&gt;\mu = \frac{1}{2}&lt;/script&gt; and variance &lt;script type=&quot;math/tex&quot;&gt;\sigma^2 = \frac{1}{4}&lt;/script&gt;, we can try to pretend that the sum &lt;script type=&quot;math/tex&quot;&gt;S_n = \sum^{400}_{i=1} X_i &lt;/script&gt; of such variables is normally distributed.&lt;/p&gt;
 
 &lt;p&gt;Then we can compute the mean of this sum&lt;/p&gt;
 
@@ -310,7 +482,7 @@
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\sigma^2_n = n \sigma^2 = 400 \cdot \frac{1}{4} = 100&lt;/script&gt;
 
-&lt;p&gt;Now we could use the approximation &lt;/p&gt;
+&lt;p&gt;Now we could use the approximation&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;P\left(S_n \le c \right) \approx \Phi\left(z\right)&lt;/script&gt;
 
@@ -320,13 +492,13 @@
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;P\left( 220 \le S_n \le 400 \right) = 1 - P\left( 219 \le S_n \right)&lt;/script&gt;
 
-&lt;p&gt;Two points must be noted. Firstly, &lt;script type=&quot;math/tex&quot;&gt;P\left( S_n \le 400 \right) = 1&lt;/script&gt;, since there is only &lt;script type=&quot;math/tex&quot;&gt;n=400&lt;/script&gt; tosses in a trial. Secondly, we have to be careful when moving from discrete to continuous world – we would like to include &lt;script type=&quot;math/tex&quot;&gt;P\left( S_n = 220 \right)&lt;/script&gt; into our answer, so the last (discrete) value to exclude is &lt;script type=&quot;math/tex&quot;&gt;S_n = 219&lt;/script&gt;. &lt;/p&gt;
+&lt;p&gt;Two points must be noted. Firstly, &lt;script type=&quot;math/tex&quot;&gt;P\left( S_n \le 400 \right) = 1&lt;/script&gt;, since there is only &lt;script type=&quot;math/tex&quot;&gt;n=400&lt;/script&gt; tosses in a trial. Secondly, we have to be careful when moving from discrete to continuous world – we would like to include &lt;script type=&quot;math/tex&quot;&gt;P\left( S_n = 220 \right)&lt;/script&gt; into our answer, so the last (discrete) value to exclude is &lt;script type=&quot;math/tex&quot;&gt;S_n = 219&lt;/script&gt;.&lt;/p&gt;
 
 &lt;p&gt;The CDF tables are normalised, so let’s normalise the value of &lt;script type=&quot;math/tex&quot;&gt;z&lt;/script&gt;&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;z = \frac{c -n\mu}{\sqrt{\sigma^2 n}} = \frac{219 - 200}{\sqrt{100}} = \frac{19}{10} = 1.9&lt;/script&gt;
 
-&lt;p&gt;My tables (Lindley D.V. &amp;amp; Scott W.F., 2008) state that &lt;/p&gt;
+&lt;p&gt;My tables (Lindley D.V. &amp;amp; Scott W.F., 2008) state that&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\Phi\left( 1.9 \right) \approx 0.9713&lt;/script&gt;
 
@@ -342,13 +514,13 @@
   &lt;p&gt;When &lt;script type=&quot;math/tex&quot;&gt;p&lt;/script&gt; is close to &lt;script type=&quot;math/tex&quot;&gt;\frac{1}{2}&lt;/script&gt;, in which case the PMF of &lt;script type=&quot;math/tex&quot;&gt;X_i&lt;/script&gt; is symmetric, the […] formula yields a very good approximation for &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; as low as &lt;script type=&quot;math/tex&quot;&gt;40&lt;/script&gt; or &lt;script type=&quot;math/tex&quot;&gt;50&lt;/script&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;This was pencil and paper (and statistical tables) approach. We can do the same thing in software to verify the answer. &lt;/p&gt;
+&lt;p&gt;This was pencil and paper (and statistical tables) approach. We can do the same thing in software to verify the answer.&lt;/p&gt;
 
 &lt;noscript&gt;&lt;pre&gt;400: Invalid request
 &lt;/pre&gt;&lt;/noscript&gt;
 &lt;script src=&quot;https://gist.github.com/13a03dffbcb8b6d805280c9afaab157a.js&quot;&gt; &lt;/script&gt;
 
-&lt;p&gt;This code returns the value of &lt;script type=&quot;math/tex&quot;&gt;0.03&lt;/script&gt;, or &lt;script type=&quot;math/tex&quot;&gt;3\%&lt;/script&gt;, same as before. &lt;/p&gt;
+&lt;p&gt;This code returns the value of &lt;script type=&quot;math/tex&quot;&gt;0.03&lt;/script&gt;, or &lt;script type=&quot;math/tex&quot;&gt;3\%&lt;/script&gt;, same as before.&lt;/p&gt;
 
 &lt;p&gt;There we have it!&lt;/p&gt;
 
@@ -379,7 +551,7 @@
         <title>Introduction</title>
         <description>&lt;p&gt;Hello, my name is Ollie. I’ve started this blog to document my (mis)adventures, mostly in technology. I have a large backlog of (small) personal projects which I would like to publish, even if just for the sake of revision of the things that I have learned. I hope that somebody may find at least some of this useful one day.&lt;/p&gt;
 </description>
-        <pubDate>Thu, 19 May 2016 15:22:59 +0100</pubDate>
+        <pubDate>Thu, 19 May 2016 00:00:00 +0100</pubDate>
         <link>http://www.frolovs.me/2016/05/19/introduction.html</link>
         <guid isPermaLink="true">http://www.frolovs.me/2016/05/19/introduction.html</guid>
         

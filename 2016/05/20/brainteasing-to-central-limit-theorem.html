@@ -13,7 +13,13 @@
   <link rel="canonical" href="http://www.frolovs.me/2016/05/20/brainteasing-to-central-limit-theorem.html">
   <link rel="alternate" type="application/rss+xml" title="Ollie's Universe" href="http://www.frolovs.me/feed.xml">
 
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  
+  
+
+  
+  
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  
 </head>
 
 
@@ -77,13 +83,13 @@
 
 <script type="math/tex; mode=display">p_{x}(k) = \binom{n}{k} p^k \left(1-p\right)^{n-k}</script>
 
-<p>This means, for example, that the probability of scoring <em>exactly</em> 220 heads is </p>
+<p>This means, for example, that the probability of scoring <em>exactly</em> 220 heads is</p>
 
 <script type="math/tex; mode=display">p_{x}(220) = \binom{400}{220} \left(\frac{1}{2}\right)^{220} \left(1-\frac{1}{2}\right)^{400-220} = \frac{\binom{400}{220}}{2^{400}}</script>
 
 <p>The final form of this expression can be interpreted as a number of ways to choose 220 heads from 400 tosses in the numerator over the total number of possible configurations in the denominator.</p>
 
-<p>Herein comes the trouble. We would like to know the probability of the number of heads being <script type="math/tex">\ge 220</script>, not just <em>exactly</em> 220. In other words, we seek to compute the sum </p>
+<p>Herein comes the trouble. We would like to know the probability of the number of heads being <script type="math/tex">\ge 220</script>, not just <em>exactly</em> 220. In other words, we seek to compute the sum</p>
 
 <script type="math/tex; mode=display">p_x(k \ge 220) = \sum^{400}_{k=220} p_x(k) = p_x(220) + p_x(221) + p_x(222) + \dots + p_x(400)</script>
 
@@ -123,11 +129,11 @@
 
 <h1 id="option-2-sum-by-iteration">Option 2: Sum by Iteration</h1>
 
-<p>For a more formal approach, consider the sum </p>
+<p>For a more formal approach, consider the sum</p>
 
 <script type="math/tex; mode=display">p_x(k \ge 220) = p_x(220) + p_x(221) + p_x(222) + \dots + p_x(400)</script>
 
-<p>Since the Bernoulli probability for each toss <script type="math/tex">p=0.5</script> is fixed, the sum of probabilities can be reduced to the sum of binomial coefficients </p>
+<p>Since the Bernoulli probability for each toss <script type="math/tex">p=0.5</script> is fixed, the sum of probabilities can be reduced to the sum of binomial coefficients</p>
 
 <script type="math/tex; mode=display">p_x(k \ge 220) = 2^{-n} \sum_{k=220}^{400} \binom{n}{k}</script>
 
@@ -139,11 +145,11 @@
 
 <p>This code returns the value of <script type="math/tex">0.03</script>, or <script type="math/tex">3\%</script>. This result was computed much, much faster than using simulation, but the important thing here is that it’s the <em>same answer</em> obtained using <em>different methods</em>.</p>
 
-<p>The C++ implementation would have to include a way to compute <script type="math/tex">\binom{n}{k}</script> since the standard library does not provide for it. Implementing it is a good exercise, since one cannot rely on the mathematical definition involving factorials – the result would overflow even for rather small values of <script type="math/tex">n</script>. (Knuth, 2011) has a lot more to say on this. </p>
+<p>The C++ implementation would have to include a way to compute <script type="math/tex">\binom{n}{k}</script> since the standard library does not provide for it. Implementing it is a good exercise, since one cannot rely on the mathematical definition involving factorials – the result would overflow even for rather small values of <script type="math/tex">n</script>. (Knuth, 2011) has a lot more to say on this.</p>
 
 <h1 id="option-3-normal-approximation-based-on-the-central-limit-theorem">Option 3: Normal Approximation Based on the Central Limit Theorem</h1>
 
-<p>Since each coin toss <script type="math/tex">X_i</script> is an independent Bernoulli rendom variable and all tosses in a trial are identically distributed with mean <script type="math/tex">\mu = \frac{1}{2}</script> and variance <script type="math/tex">\sigma^2 = \frac{1}{4}</script>, we can try to pretend that the sum <script type="math/tex">S_n = \sum^{400}_{i=1} X_i </script> of such variables is normally distributed. </p>
+<p>Since each coin toss <script type="math/tex">X_i</script> is an independent Bernoulli rendom variable and all tosses in a trial are identically distributed with mean <script type="math/tex">\mu = \frac{1}{2}</script> and variance <script type="math/tex">\sigma^2 = \frac{1}{4}</script>, we can try to pretend that the sum <script type="math/tex">S_n = \sum^{400}_{i=1} X_i </script> of such variables is normally distributed.</p>
 
 <p>Then we can compute the mean of this sum</p>
 
@@ -153,7 +159,7 @@
 
 <script type="math/tex; mode=display">\sigma^2_n = n \sigma^2 = 400 \cdot \frac{1}{4} = 100</script>
 
-<p>Now we could use the approximation </p>
+<p>Now we could use the approximation</p>
 
 <script type="math/tex; mode=display">P\left(S_n \le c \right) \approx \Phi\left(z\right)</script>
 
@@ -163,13 +169,13 @@
 
 <script type="math/tex; mode=display">P\left( 220 \le S_n \le 400 \right) = 1 - P\left( 219 \le S_n \right)</script>
 
-<p>Two points must be noted. Firstly, <script type="math/tex">P\left( S_n \le 400 \right) = 1</script>, since there is only <script type="math/tex">n=400</script> tosses in a trial. Secondly, we have to be careful when moving from discrete to continuous world – we would like to include <script type="math/tex">P\left( S_n = 220 \right)</script> into our answer, so the last (discrete) value to exclude is <script type="math/tex">S_n = 219</script>. </p>
+<p>Two points must be noted. Firstly, <script type="math/tex">P\left( S_n \le 400 \right) = 1</script>, since there is only <script type="math/tex">n=400</script> tosses in a trial. Secondly, we have to be careful when moving from discrete to continuous world – we would like to include <script type="math/tex">P\left( S_n = 220 \right)</script> into our answer, so the last (discrete) value to exclude is <script type="math/tex">S_n = 219</script>.</p>
 
 <p>The CDF tables are normalised, so let’s normalise the value of <script type="math/tex">z</script></p>
 
 <script type="math/tex; mode=display">z = \frac{c -n\mu}{\sqrt{\sigma^2 n}} = \frac{219 - 200}{\sqrt{100}} = \frac{19}{10} = 1.9</script>
 
-<p>My tables (Lindley D.V. &amp; Scott W.F., 2008) state that </p>
+<p>My tables (Lindley D.V. &amp; Scott W.F., 2008) state that</p>
 
 <script type="math/tex; mode=display">\Phi\left( 1.9 \right) \approx 0.9713</script>
 
@@ -185,13 +191,13 @@
   <p>When <script type="math/tex">p</script> is close to <script type="math/tex">\frac{1}{2}</script>, in which case the PMF of <script type="math/tex">X_i</script> is symmetric, the […] formula yields a very good approximation for <script type="math/tex">n</script> as low as <script type="math/tex">40</script> or <script type="math/tex">50</script>.</p>
 </blockquote>
 
-<p>This was pencil and paper (and statistical tables) approach. We can do the same thing in software to verify the answer. </p>
+<p>This was pencil and paper (and statistical tables) approach. We can do the same thing in software to verify the answer.</p>
 
 <noscript><pre>400: Invalid request
 </pre></noscript>
 <script src="https://gist.github.com/13a03dffbcb8b6d805280c9afaab157a.js"> </script>
 
-<p>This code returns the value of <script type="math/tex">0.03</script>, or <script type="math/tex">3\%</script>, same as before. </p>
+<p>This code returns the value of <script type="math/tex">0.03</script>, or <script type="math/tex">3\%</script>, same as before.</p>
 
 <p>There we have it!</p>
 
