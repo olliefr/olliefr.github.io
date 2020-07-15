@@ -1,0 +1,88 @@
+
+// TODO optimise Lato
+@import (css) url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+// Roboto Black Italic (900)
+@import (css) url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,900&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  
+  // Turn off faux fonts and enable kerning
+  font-synthesis: none;
+  font-kerning: normal;
+  
+  --root-font-size: 10px; // Root (HTML) font size
+  --base-font-size: 1.60rem; // Paragraph font size FIXME confusing naming?
+  --global-line-height: 3rem; // Computed relative to root-font-size
+  
+  // Type scale based on Major Second (1.125)
+  --h1-font-size: 3.24em;
+  --h2-font-size: 2.88em;
+  --h3-font-size: 2.56em;
+  --h4-font-size: 2.28em;
+  --h5-font-size: 2.02em;
+  --h6-font-size: 1.80em;
+    
+  --small-font-size: 1.42em;
+  --smaller-font-size: 1.26em;
+  --smallest-font-size: 1.12em;
+  
+  // Root element properties
+  font-size: var(--root-font-size);
+  line-height: var(--global-line-height);
+  
+  // Page background
+  //background-color: #000080;
+  //background-color: black;
+  
+  //background-color: #242423;
+  //background-image: url("https://www.transparenttextures.com/patterns/black-orchid.png");
+  
+  //background-color: #98d2eb;
+  //background-image: url("https://www.transparenttextures.com/patterns/noisy-grid.png");
+  
+  //background-color: #98d2eb;
+  background-color: #eee;
+  background-image: url("https://www.transparenttextures.com/patterns/light-wool.png");
+}
+
+body {
+  // Set to a readable width and centre horizontally
+  max-width: calc(60ch * 1.6); // FIXME need a better way to set this
+  margin: 0 auto;
+  
+  font-family: "Lato", sans-serif;
+}
+
+p,
+ul {
+  font-size: var(--base-font-size);
+  font-weight: 400;
+}
+
+div#header {
+  h1 {
+    
+    font-family: 'Roboto', sans-serif;
+    font-style: italic;
+    font-weight: 900;
+    font-variant-caps: small-caps;
+    font-size: var(--h1-font-size);
+    
+    text-transform: capitalize;
+  }
+  
+  ul {
+    list-style: none; 
+    
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    
+    padding-left: 0;
+  }
+}
