@@ -20,6 +20,10 @@
 
 :root {
   
+  /* Palette */
+  --color-outrun-mirage: #201932;
+  --color-outrun-yellow: #f9c80e;
+  
   /* Turn off faux fonts and enable kerning */
   font-synthesis: none;
   font-kerning: normal;
@@ -40,16 +44,10 @@
   --smaller-font-size: 1.26em;
   --smallest-font-size: 1.12em;
   
-  /* Root element properties */
   font-size: var(--root-font-size);
   line-height: var(--global-line-height);
   
-  /* Page background */
-  /*
-  background-color: #000080;
-  background-color: black;
-  */  
-  background-color: #2b5797;
+  background-color: var(--color-outrun-mirage);
 }
 
 body {
@@ -58,27 +56,16 @@ body {
   margin: 0 auto;
   
   font-family: "Lato", sans-serif;
-  
 }
 
 a {
-    text-decoration: none;
-    color: #eff4ff;
-    line-height: 120%;
+  color: #eff4ff;
+  line-height: 120%;
 }
 
 a:hover {
   text-decoration: underline dashed;
-  background-color: #ffc40d;
-}
-
-a::after {
-  vertical-align: super;
-  color: #da532c;
-  
-  font-family: 'FontAwesome';
-  content: "\f08e";
-  padding-left: 0.5rem;
+  color: var(--color-outrun-yellow);
 }
 
 p,
@@ -90,10 +77,10 @@ ul {
 }
 
 ul {
-  list-style: none;
-  list-style-position: inside;
-    padding-left: 0;
-    line-height: 5rem;
+  list-style: hiragana;
+  list-style-position: outside;
+  padding-left: 0;
+  line-height: 5rem;
 }
 
 div#header h1 {
@@ -106,30 +93,11 @@ div#header h1 {
     
   text-transform: capitalize;
   
-  color: #fc0;
+  color: var(--color-outrun-yellow);
   margin-bottom: 3rem;
 }
 
 div#header h2 {
     font-weight: 300;
-    
     color: #eff4ff;
-}
-
-li::before {
-  font-family: 'FontAwesome';
-  font-size: 3rem;
-  padding-right: 1.5rem;
-}
-
-li:nth-of-type(1)::before {
-  content: "\f08c";
-}
-
-li:nth-of-type(2)::before {
-  content: "\f09b";
-}
-
-li:nth-of-type(3)::before {
-  content: "\f249";
 }
