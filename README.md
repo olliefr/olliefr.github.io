@@ -1,4 +1,4 @@
 olliefr.github.io
 =================
 
-www.frolovs.me –– a personal website.
+frolovs.me –– a personal website.
